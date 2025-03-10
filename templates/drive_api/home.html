@@ -3,66 +3,77 @@
 {% block title %}Project Folders{% endblock %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col">
-        <h2>Project Folders</h2>
+<div class="max-w-7xl mx-auto">
+    <div class="mb-8 text-center">
+        <h1 class="text-4xl font-bold text-slate-900 mb-3">Project Folders</h1>
+        <p class="text-lg text-slate-600 max-w-2xl mx-auto">Select a folder to view its contents or upload files.</p>
     </div>
-</div>
 
-{% if auth_url %}
-    <div class="alert alert-warning">
-        <p>You need to authenticate with Google Drive to use this application.</p>
-        <a href="{{ auth_url }}" class="btn btn-primary">Connect to Google Drive</a>
-    </div>
-{% endif %}
+    {% if auth_url %}
+        <div class="alert alert-warning max-w-xl mx-auto">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                <p>You need to authenticate with Google Drive to use this application.</p>
+            </div>
+            <div class="mt-3">
+                <a href="{{ auth_url }}" class="btn btn-primary inline-flex items-center justify-center w-full">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 2a6 6 0 110 12 6 6 0 010-12zm0 3a3 3 0 100 6 3 3 0 000-6z"/>
+                    </svg>
+                    Connect to Google Drive
+                </a>
+            </div>
+        </div>
+    {% endif %}
 
-{% if folder_data %}
-    <div class="row">
-        {% for data in folder_data %}
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Folder {{ data.folder.name }}</h5>
+    {% if folders %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for folder in folders %}
+                <div class="card group overflow-hidden">
+                    <div class="h-24 bg-gradient-to-r from-violet-500 to-indigo-600 flex items-center justify-center">
+                        <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                        </svg>
                     </div>
-                    <div class="card-body">
-                        <a href="{% url 'upload_file' data.folder.name %}" class="btn btn-success mb-3">Upload File</a>
-                        
-                        {% if data.files %}
-                            <div class="list-group">
-                                {% for file in data.files %}
-                                    <div class="list-group-item">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <h6 class="mb-1">{{ file.name }}</h6>
-                                                <small class="text-muted">
-                                                    Type: {{ file.mimeType|truncatechars:30 }}<br>
-                                                    {% if file.size %}Size: {{ file.size|filesizeformat }}{% endif %}<br>
-                                                    Created: {{ file.createdTime|date:"M d, Y" }}
-                                                </small>
-                                            </div>
-                                            <div>
-                                                {% if file.mimeType != 'application/vnd.google-apps.folder' %}
-                                                    <a href="{% url 'download_file' file.id %}" class="btn btn-sm btn-primary me-2">Download</a>
-                                                {% endif %}
-                                                <a href="https://drive.google.com/open?id={{ file.id }}" target="_blank" class="btn btn-sm btn-outline-secondary">Open in Drive</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            <p class="text-muted">No files in this folder.</p>
-                        {% endif %}
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-2xl font-semibold text-slate-900">Folder {{ folder.name }}</h3>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-violet-100 text-violet-800">
+                                Project
+                            </span>
+                        </div>
+                        <div class="flex space-x-3 mt-6">
+                            <a href="{% url 'folder_contents' folder.name %}" class="btn btn-primary inline-flex items-center justify-center flex-1">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                                Open
+                            </a>
+                            <a href="{% url 'upload_file' folder.name %}" class="btn btn-success inline-flex items-center justify-center flex-1">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                </svg>
+                                Upload
+                            </a>
+                        </div>
                     </div>
                 </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info max-w-xl mx-auto">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                </svg>
+                {% if not auth_url %}
+                    <p>No folders found. Please authenticate with Google Drive to create the folder structure.</p>
+                {% endif %}
             </div>
-        {% endfor %}
-    </div>
-{% else %}
-    <div class="alert alert-info">
-        {% if not auth_url %}
-            No folders found. Please authenticate with Google Drive to create the folder structure.
-        {% endif %}
-    </div>
-{% endif %}
+        </div>
+    {% endif %}
+</div>
 {% endblock %}
