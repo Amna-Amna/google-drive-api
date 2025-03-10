@@ -17,26 +17,14 @@ from .google_drive_service import (
 )
 
 def home(request):
-    """Home view that displays the list of folders and their files"""
+    """Home view that displays the list of folders"""
     try:
-        # Get Google Drive service
-        service = get_drive_service()
-        
         # Get project folders
         folders = ProjectFolder.objects.all()
         
-        # Get files for each folder
-        folder_data = []
-        for folder in folders:
-            files = list_files(service, folder_id=folder.drive_id)
-            folder_data.append({
-                'folder': folder,
-                'files': files
-            })
-        
         # Prepare context for rendering
         context = {
-            'folder_data': folder_data,
+            'folders': folders,
         }
         return render(request, 'drive_api/home.html', context)
         
@@ -45,12 +33,35 @@ def home(request):
         if "Authentication required" in str(e):
             auth_url = get_auth_url(request)
             return render(request, 'drive_api/home.html', {
-                'folder_data': [],
+                'folders': [],
                 'auth_url': auth_url
             })
         
-        messages.error(request, f"Error fetching files from Google Drive: {str(e)}")
-        return render(request, 'drive_api/home.html', {'folder_data': []})
+        messages.error(request, f"Error fetching folders from Google Drive: {str(e)}")
+        return render(request, 'drive_api/home.html', {'folders': []})
+
+def folder_contents(request, folder_name):
+    """View for displaying contents of a specific folder"""
+    try:
+        # Get Google Drive service
+        service = get_drive_service()
+        
+        # Get the folder
+        folder = get_object_or_404(ProjectFolder, name=folder_name)
+        
+        # Get files in the folder
+        files = list_files(service, folder_id=folder.drive_id)
+        
+        # Prepare context for rendering
+        context = {
+            'folder': folder,
+            'files': files,
+        }
+        return render(request, 'drive_api/folder_contents.html', context)
+        
+    except Exception as e:
+        messages.error(request, f"Error fetching files from folder {folder_name}: {str(e)}")
+        return redirect('home')
 
 def upload_file_view(request, folder_name):
     """View for uploading files to a specific folder"""

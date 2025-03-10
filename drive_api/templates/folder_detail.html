@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Folder {{ folder.name }} - Drive API{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-folder-open me-2"></i>
+                Folder {{ folder.name }}
+            </h2>
+            <a href="{% url 'folder_list' %}" class="btn btn-outline-primary btn-modern">
+                <i class="fas fa-arrow-left me-2"></i>Back to Folders
+            </a>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for file in files %}
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-file file-icon me-3"></i>
+                            <h5 class="card-title mb-0">{{ file.name }}</h5>
+                        </div>
+                        <p class="card-text text-muted small">
+                            <i class="fas fa-clock me-1"></i> Modified: {{ file.modified_time|date:"M d, Y" }}<br>
+                            <i class="fas fa-weight-hanging me-1"></i> Size: {{ file.size|filesizeformat }}
+                        </p>
+                        <div class="d-grid gap-2">
+                            {% if file.web_view_link %}
+                            <a href="{{ file.web_view_link }}" target="_blank" class="btn btn-outline-primary btn-modern">
+                                <i class="fas fa-external-link-alt me-2"></i>View in Drive
+                            </a>
+                            {% endif %}
+                            {% if file.web_content_link %}
+                            <a href="{{ file.web_content_link }}" class="btn btn-primary btn-modern">
+                                <i class="fas fa-download me-2"></i>Download
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>No files in this folder.
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

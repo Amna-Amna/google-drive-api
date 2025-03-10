@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Folders - Drive API{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2 class="mb-4">Project Folders</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for folder in folders %}
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-folder folder-icon"></i>
+                        <h5 class="card-title">Folder {{ folder.name }}</h5>
+                        <p class="card-text text-muted">
+                            Created: {{ folder.created_time|date:"M d, Y" }}
+                        </p>
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'folder_detail' folder.id %}" class="btn btn-primary btn-modern">
+                                <i class="fas fa-folder-open me-2"></i>View Contents
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>No folders available.
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %} 
