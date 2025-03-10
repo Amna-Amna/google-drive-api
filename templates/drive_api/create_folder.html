@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Google Drive Folder{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">Create New Folder in Google Drive</h2>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="folder_name" class="form-label">Folder Name</label>
+                        <input type="text" name="folder_name" id="folder_name" 
+                               class="form-control" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="parent_folder_id" class="form-label">Parent Folder ID (Optional)</label>
+                        <input type="text" name="parent_folder_id" id="parent_folder_id" 
+                               class="form-control" placeholder="Leave blank to create in root folder">
+                        <div class="form-text">
+                            The parent folder ID is part of the URL when you open a folder in Google Drive.
+                            Example: https://drive.google.com/drive/folders/<strong>FOLDER_ID_HERE</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Create Folder</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
